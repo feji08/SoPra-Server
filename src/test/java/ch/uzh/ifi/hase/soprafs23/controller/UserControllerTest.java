@@ -49,6 +49,7 @@ public class UserControllerTest {
     User user = new User();
     user.setName("Firstname Lastname");
     user.setUsername("firstname@lastname");
+    user.setPassword("p");
     user.setStatus(UserStatus.OFFLINE);
 
     List<User> allUsers = Collections.singletonList(user);
@@ -75,11 +76,12 @@ public class UserControllerTest {
     user.setId(1L);
     user.setName("Test User");
     user.setUsername("testUsername");
+    user.setPassword("p");
     user.setToken("1");
     user.setStatus(UserStatus.ONLINE);
 
     UserPostDTO userPostDTO = new UserPostDTO();
-    userPostDTO.setName("Test User");
+    userPostDTO.setPassword("p");
     userPostDTO.setUsername("testUsername");
 
     given(userService.createUser(Mockito.any())).willReturn(user);
@@ -97,6 +99,8 @@ public class UserControllerTest {
         .andExpect(jsonPath("$.username", is(user.getUsername())))
         .andExpect(jsonPath("$.status", is(user.getStatus().toString())));
   }
+
+
 
   /**
    * Helper Method to convert userPostDTO into a JSON string such that the input

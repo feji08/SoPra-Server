@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs23.service;
 import ch.uzh.ifi.hase.soprafs23.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs23.entity.User;
 import ch.uzh.ifi.hase.soprafs23.repository.UserRepository;
+import ch.uzh.ifi.hase.soprafs23.rest.dto.UserPostDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -41,7 +43,12 @@ public class UserService {
 
   public User createUser(User newUser) {
     newUser.setToken(UUID.randomUUID().toString());
-    newUser.setStatus(UserStatus.OFFLINE);
+      /**
+       * make registered user online
+       */
+    newUser.setStatus(UserStatus.ONLINE);
+    newUser.setName("NewUser");
+    newUser.setBirthday("0000-00-00");
     checkIfUserExists(newUser);
     // saves the given entity but data is only persisted in the database once
     // flush() is called
@@ -51,6 +58,23 @@ public class UserService {
     log.debug("Created Information for User: {}", newUser);
     return newUser;
   }
+
+  public void update(Long userId, UserPostDTO userPostDTO){
+      User userOld = userRepository.findById(userId).get();
+      if (userPostDTO.getUsername()!=null && !userOld.getUsername().equals(userPostDTO.getUsername())) {
+          userOld.setUsername(userPostDTO.getUsername());
+      }
+      userRepository.save(userOld);
+      userRepository.flush();
+  }
+
+  public User getUserByUsername(String username) { return userRepository.findByUsername(username); }
+
+    public Optional<User> getUserById(Long userId) {
+        return userRepository.findById(userId);
+    }
+
+    public User getUserByToken(String token) {return userRepository.findByToken(token);}
 
   /**
    * This is a helper method that will check the uniqueness criteria of the
@@ -64,16 +88,35 @@ public class UserService {
    */
   private void checkIfUserExists(User userToBeCreated) {
     User userByUsername = userRepository.findByUsername(userToBeCreated.getUsername());
-    User userByName = userRepository.findByName(userToBeCreated.getName());
-
     String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
-    if (userByUsername != null && userByName != null) {
+    if (userByUsername != null) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-          String.format(baseErrorMessage, "username and the name", "are"));
-    } else if (userByUsername != null) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "username", "is"));
-    } else if (userByName != null) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "name", "is"));
+          String.format(baseErrorMessage, "username", "is"));
     }
   }
+
+    /**
+     * add login check
+     */
+  public boolean checkIfUsernameExist(UserPostDTO loginPostDTO){
+      User userByUsername = userRepository.findByUsername(loginPostDTO.getUsername());
+      if(userByUsername != null){
+          return true;
+      }
+      return false;
+  }
+  public boolean checkIfPasswordMatch(UserPostDTO loginPostDTO){
+      User userByUsername = userRepository.findByUsername(loginPostDTO.getUsername());
+      if(userByUsername.getPassword().equals(loginPostDTO.getPassword())){
+          return true;
+      }
+      return false;
+  }
+
+    public void login(User foundUser){
+        foundUser.setStatus(UserStatus.ONLINE);
+    }
+    public void logout(User foundUser){
+        foundUser.setStatus(UserStatus.OFFLINE);
+    }
 }
