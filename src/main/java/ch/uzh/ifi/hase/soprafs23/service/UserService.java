@@ -63,6 +63,7 @@ public class UserService {
       User userOld = userRepository.findById(userId).get();
       if (userPostDTO.getUsername()!=null && !userOld.getUsername().equals(userPostDTO.getUsername())) {
           userOld.setUsername(userPostDTO.getUsername());
+          userOld.setBirthday(userPostDTO.getBirthday());
       }
       userRepository.save(userOld);
       userRepository.flush();
@@ -100,17 +101,11 @@ public class UserService {
      */
   public boolean checkIfUsernameExist(UserPostDTO loginPostDTO){
       User userByUsername = userRepository.findByUsername(loginPostDTO.getUsername());
-      if(userByUsername != null){
-          return true;
-      }
-      return false;
+      return userByUsername != null;
   }
   public boolean checkIfPasswordMatch(UserPostDTO loginPostDTO){
       User userByUsername = userRepository.findByUsername(loginPostDTO.getUsername());
-      if(userByUsername.getPassword().equals(loginPostDTO.getPassword())){
-          return true;
-      }
-      return false;
+      return userByUsername.getPassword().equals(loginPostDTO.getPassword());
   }
 
     public void login(User foundUser){
