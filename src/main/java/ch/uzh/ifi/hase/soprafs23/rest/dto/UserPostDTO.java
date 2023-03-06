@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs23.rest.dto;
 
+import java.util.Date;
+
 public class UserPostDTO {
 
     private Long id;
@@ -8,6 +10,7 @@ public class UserPostDTO {
 
   private String birthday;
 
+  private Date creationDate;
   private String token;
   private String username;
 
@@ -49,5 +52,13 @@ public class UserPostDTO {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 }
