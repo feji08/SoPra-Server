@@ -28,7 +28,6 @@ public interface DTOMapper {
   User convertUserPostDTOtoEntity(UserPostDTO userPostDTO);
 
   @Mapping(source = "id", target = "id")
-  @Mapping(source = "name", target = "name")
   @Mapping(source = "username", target = "username")
   @Mapping(source = "birthday", target = "birthday")
   @Mapping(source = "creationDate", target = "creationDate")
@@ -39,7 +38,6 @@ public interface DTOMapper {
      * only for register and login
      */
     @Mapping(source = "id", target = "id")
-    @Mapping(source = "name", target = "name")
     @Mapping(source = "username", target = "username")
     @Mapping(source = "birthday", target = "birthday")
     @Mapping(source = "creationDate", target = "creationDate")

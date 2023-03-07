@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -42,14 +44,12 @@ public class UserService {
     return this.userRepository.findAll();
   }
 
-  public User createUser(User newUser) {
+  public User createUser(User newUser) throws ParseException {
     newUser.setToken(UUID.randomUUID().toString());
       /**
        * make registered user online
        */
     newUser.setStatus(UserStatus.ONLINE);
-    newUser.setName("NewUser");
-    newUser.setBirthday("0000-00-00");
     newUser.setCreationDate(new Date());
     checkIfUserExists(newUser);
     // saves the given entity but data is only persisted in the database once

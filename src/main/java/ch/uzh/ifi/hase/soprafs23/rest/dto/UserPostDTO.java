@@ -8,8 +8,7 @@ public class UserPostDTO {
 
   private String password;
 
-  private String birthday;
-
+  private Date birthday;
   private Date creationDate;
   private String token;
   private String username;
@@ -38,11 +37,11 @@ public class UserPostDTO {
         this.id = id;
     }
 
-    public String getBirthday() {
+    public Date getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(String birthday) {
+    public void setBirthday(Date birthday) {
         this.birthday = birthday;
     }
 

@@ -6,13 +6,11 @@ import java.util.Date;
 
 public class LocalUserGetDTO {
     private Long id;
-    private String name;
     private String username;
     private String birthday;
 
     private Date creationDate;
     private UserStatus status;
-
     private String token;
 
     public Long getId() {
@@ -21,14 +19,6 @@ public class LocalUserGetDTO {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getUsername() {
