@@ -47,7 +47,7 @@ public class UserController {
   }
 
   @PostMapping("/users")
-  @ResponseStatus(HttpStatus.CREATED)
+  @ResponseStatus(HttpStatus.CREATED)//201
   @ResponseBody
   public LocalUserGetDTO createUser(@RequestBody UserPostDTO userPostDTO) throws ParseException {
     // convert API user to internal representation
@@ -60,11 +60,12 @@ public class UserController {
   }
 
     @GetMapping("/users/{userId}")
+    @ResponseStatus(HttpStatus.OK)//200
     @ResponseBody
     public UserGetDTO getUser(@PathVariable Long userId) {
         // search for user
         if(userService.getUserById(userId).isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found!");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found!");//404
         }
         User foundUser = userService.getUserById(userId).get();
         // convert internal representation of user back to API
@@ -72,11 +73,12 @@ public class UserController {
     }
 
     @PutMapping("/users/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)//204
     @ResponseBody
     public void updateUser(@PathVariable Long userId, @RequestBody UserPostDTO userPostDTO) {
         // search for user
         if(userService.getUserById(userId).isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found!");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found!");//404
         }
         userService.update(userId, userPostDTO);
     }

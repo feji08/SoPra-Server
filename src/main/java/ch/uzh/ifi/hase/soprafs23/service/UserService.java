@@ -63,8 +63,18 @@ public class UserService {
 
   public void update(Long userId, UserPostDTO userPostDTO){
       User userOld = userRepository.findById(userId).get();
-      if (userPostDTO.getUsername()!=null && !userOld.getUsername().equals(userPostDTO.getUsername())) {
+      User userByUsername = userRepository.findByUsername(userPostDTO.getUsername());
+
+      String baseErrorMessage = "The %s provided %s already taken!";
+      if (userByUsername != null && userOld != userByUsername) {
+          throw new ResponseStatusException(HttpStatus.CONFLICT,
+                  String.format(baseErrorMessage, "username", "is"));
+      }
+
+      if (userPostDTO.getUsername()!=null) {
           userOld.setUsername(userPostDTO.getUsername());
+      }
+      if (userPostDTO.getBirthday()!=null) {
           userOld.setBirthday(userPostDTO.getBirthday());
       }
       userRepository.save(userOld);
@@ -93,7 +103,7 @@ public class UserService {
     User userByUsername = userRepository.findByUsername(userToBeCreated.getUsername());
     String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
     if (userByUsername != null) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+      throw new ResponseStatusException(HttpStatus.CONFLICT,
           String.format(baseErrorMessage, "username", "is"));
     }
   }
