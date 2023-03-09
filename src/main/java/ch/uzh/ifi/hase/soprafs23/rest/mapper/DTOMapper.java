@@ -39,8 +39,8 @@ public interface DTOMapper {
      */
     @Mapping(source = "id", target = "id")
     @Mapping(source = "username", target = "username")
-    @Mapping(source = "birthday", target = "birthday")
-    @Mapping(source = "creationDate", target = "creationDate")
+    @Mapping(source = "birthday", target = "birthday",dateFormat = "yyyy-MM-dd")
+    @Mapping(source = "creationDate", target = "creationDate",dateFormat = "yyyy-MM-dd")
     @Mapping(source = "status", target = "status")
     @Mapping(source = "token", target = "token")
     LocalUserGetDTO convertEntityToLocalUserGetDTO(User user);

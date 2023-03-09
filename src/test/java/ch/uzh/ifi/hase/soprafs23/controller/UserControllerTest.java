@@ -17,8 +17,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -48,7 +51,8 @@ public class UserControllerTest {
     // given
     User user = new User();
     user.setUsername("firstname@lastname");
-    user.setPassword("p");
+    user.setCreationDate(new Date());
+    user.setBirthday(new Date());
     user.setStatus(UserStatus.OFFLINE);
 
     List<User> allUsers = Collections.singletonList(user);
@@ -59,11 +63,14 @@ public class UserControllerTest {
 
     // when
     MockHttpServletRequestBuilder getRequest = get("/users").contentType(MediaType.APPLICATION_JSON);
+    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
     // then
     mockMvc.perform(getRequest).andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(1)))
         .andExpect(jsonPath("$[0].username", is(user.getUsername())))
+        .andExpect(jsonPath("$[0].creationDate", is(formatter.format(user.getCreationDate()))))
+        .andExpect(jsonPath("$[0].birthday", is(formatter.format(user.getBirthday()))))
         .andExpect(jsonPath("$[0].status", is(user.getStatus().toString())));
   }
 
@@ -95,6 +102,43 @@ public class UserControllerTest {
         .andExpect(jsonPath("$.username", is(user.getUsername())))
         .andExpect(jsonPath("$.status", is(user.getStatus().toString())));
   }
+
+    @Test
+    public void givenUserId_whenGetUserById_thenReturnUserJson() throws Exception {
+        // given
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("firstname@lastname");
+        user.setPassword("p");
+        user.setStatus(UserStatus.ONLINE);
+
+        given(userService.getUserById(1L)).willReturn(Optional.of(user));
+
+        // when
+        MockHttpServletRequestBuilder getRequest = get("/users/1").contentType(MediaType.APPLICATION_JSON);
+
+        // then
+        mockMvc.perform(getRequest)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(user.getId().intValue())))
+                .andExpect(jsonPath("$.username", is(user.getUsername())))
+                .andExpect(jsonPath("$.status", is(user.getStatus().toString())));
+    }
+
+    @Test
+    public void givenUnknownUserId_whenGetUserById_thenThrowNotFound() throws Exception {
+        // given
+        given(userService.getUserById(2L)).willReturn(Optional.empty());
+
+        // when
+        MockHttpServletRequestBuilder getRequest = get("/users/2").contentType(MediaType.APPLICATION_JSON);
+
+        // then
+        mockMvc.perform(getRequest)
+                .andExpect(status().isNotFound());
+    }
+
+
 
 
 

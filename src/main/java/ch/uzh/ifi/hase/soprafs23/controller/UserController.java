@@ -52,7 +52,6 @@ public class UserController {
   public LocalUserGetDTO createUser(@RequestBody UserPostDTO userPostDTO) throws ParseException {
     // convert API user to internal representation
     User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
-
     // create user
     User createdUser = userService.createUser(userInput);
     // convert internal representation of user back to API
@@ -107,11 +106,12 @@ public class UserController {
     @ResponseBody
     public LocalUserGetDTO login(@RequestBody UserPostDTO userPostDTO) {
         //match username
-        if(!userService.checkIfUsernameExist(userPostDTO)){
+        User userToLogin = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
+        if(!userService.checkIfUsernameExist(userToLogin)){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username!");
         }
         //match password
-        if(!userService.checkIfPasswordMatch(userPostDTO)){
+        if(!userService.checkIfPasswordMatch(userToLogin)){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid password!");
         }
         //return user

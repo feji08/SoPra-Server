@@ -51,7 +51,9 @@ public class UserService {
        */
     newUser.setStatus(UserStatus.ONLINE);
     newUser.setCreationDate(new Date());
-    checkIfUserExists(newUser);
+    if(checkIfUsernameExist(newUser)){
+        throw new ResponseStatusException(HttpStatus.CONFLICT, "Username is taken!");//409
+    }
     // saves the given entity but data is only persisted in the database once
     // flush() is called
     newUser = userRepository.save(newUser);
@@ -111,13 +113,13 @@ public class UserService {
     /**
      * add login check
      */
-  public boolean checkIfUsernameExist(UserPostDTO loginPostDTO){
-      User userByUsername = userRepository.findByUsername(loginPostDTO.getUsername());
+  public boolean checkIfUsernameExist(User user){
+      User userByUsername = userRepository.findByUsername(user.getUsername());
       return userByUsername != null;
   }
-  public boolean checkIfPasswordMatch(UserPostDTO loginPostDTO){
-      User userByUsername = userRepository.findByUsername(loginPostDTO.getUsername());
-      return userByUsername.getPassword().equals(loginPostDTO.getPassword());
+  public boolean checkIfPasswordMatch(User user){
+      User userByUsername = userRepository.findByUsername(user.getUsername());
+      return userByUsername.getPassword().equals(user.getPassword());
   }
 
     public void login(User foundUser){

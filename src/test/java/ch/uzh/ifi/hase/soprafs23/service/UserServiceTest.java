@@ -11,6 +11,8 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.text.ParseException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UserServiceTest {
@@ -30,17 +32,16 @@ public class UserServiceTest {
     // given
     testUser = new User();
     testUser.setId(1L);
-    testUser.setName("testName");
     testUser.setUsername("testUsername");
 
-    // when -> any object is being save in the userRepository -> return the dummy
+    // when -> any object is being saved in the userRepository -> return the dummy
     // testUser
     Mockito.when(userRepository.save(Mockito.any())).thenReturn(testUser);
   }
 
   @Test
-  public void createUser_validInputs_success() {
-    // when -> any object is being save in the userRepository -> return the dummy
+  public void createUser_validInputs_success() throws ParseException {
+    // when -> any object is being saved in the userRepository -> return the dummy
     // testUser
     User createdUser = userService.createUser(testUser);
 
@@ -48,14 +49,13 @@ public class UserServiceTest {
     Mockito.verify(userRepository, Mockito.times(1)).save(Mockito.any());
 
     assertEquals(testUser.getId(), createdUser.getId());
-    assertEquals(testUser.getName(), createdUser.getName());
     assertEquals(testUser.getUsername(), createdUser.getUsername());
     assertNotNull(createdUser.getToken());
-    assertEquals(UserStatus.OFFLINE, createdUser.getStatus());
+    assertEquals(UserStatus.ONLINE, createdUser.getStatus());
   }
 
   @Test
-  public void createUser_duplicateName_throwsException() {
+  public void createUser_duplicateName_throwsException() throws ParseException {
     // given -> a first user has already been created
     userService.createUser(testUser);
 
@@ -68,7 +68,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void createUser_duplicateInputs_throwsException() {
+  public void createUser_duplicateInputs_throwsException() throws ParseException {
     // given -> a first user has already been created
     userService.createUser(testUser);
 
