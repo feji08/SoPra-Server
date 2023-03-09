@@ -123,7 +123,7 @@ public class UserController {
     }
 
 
-    /**
+    /**·
      * verify token and find user
      * make user logout
      */

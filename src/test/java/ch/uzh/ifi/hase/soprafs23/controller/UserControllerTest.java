@@ -210,6 +210,42 @@ public class UserControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    public void givenUser_whenLoginWithInvalidUsername_thenThrowUnauthorized() throws Exception {
+        // given
+        given(userService.checkIfUsernameExist(Mockito.any())).willReturn(false);
+        UserPostDTO userPostDTO = new UserPostDTO();
+        userPostDTO.setUsername("newUsername");
+        userPostDTO.setPassword("p");
+
+        // when
+        MockHttpServletRequestBuilder postRequest = post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(userPostDTO));
+
+        // then
+        mockMvc.perform(postRequest)
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void givenUser_whenLoginWithInvalidPassword_thenThrowUnauthorized() throws Exception {
+        // given
+        given(userService.checkIfPasswordMatch(Mockito.any())).willReturn(false);
+        UserPostDTO userPostDTO = new UserPostDTO();
+        userPostDTO.setUsername("newUsername");
+        userPostDTO.setPassword("p");
+
+        // when
+        MockHttpServletRequestBuilder postRequest = post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(userPostDTO));
+
+        // then
+        mockMvc.perform(postRequest)
+                .andExpect(status().isUnauthorized());
+    }
+
   /**
    * Helper Method to convert userPostDTO into a JSON string such that the input
    * can be processed
